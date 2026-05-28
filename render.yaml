@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: flipkart-store
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CASHFREE_APP_ID
+        value: 12819579c067580e
+      - key: CASHFREE_SECRET_KEY
+        value: cfsk_ma_prod_c6567ced394e015447165a80863a70dd_3ac6ec21
+      - key: APP_URL
+        fromService:
+          type: web
+          name: flipkart-store
+          property: host

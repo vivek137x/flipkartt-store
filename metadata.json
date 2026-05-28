@@ -1,0 +1,6 @@
+{
+  "name": "Flipcart",
+  "description": "An authentic Flipkart-inspired flat ₹99 mega online store with dynamic product search, category tabs, cart, wishlist, and reviews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
