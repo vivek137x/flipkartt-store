@@ -1083,7 +1083,8 @@ app.post('/api/cashfree/create-order', async (req, res) => {
           customer_email: customerEmail || 'customer@example.com',
         },
         order_meta: {
-          return_url: `${process.env.APP_URL || ''}/payment-return?order_id={order_id}`,
+          return_url: `${process.env.APP_URL || req.protocol + '://' + req.get('host')}/payment-return?order_id={order_id}`,
+          notify_url: `${process.env.APP_URL || req.protocol + '://' + req.get('host')}/api/cashfree/webhook`,
         },
       }),
     });
@@ -1138,6 +1139,23 @@ app.post('/api/cashfree/verify-payment', async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ─── CASHFREE WEBHOOK (auto payment confirmation) ────────────────────────────
+app.post('/api/cashfree/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  try {
+    const payload = req.body.toString();
+    const data = JSON.parse(payload);
+    const orderId = data?.data?.order?.order_id;
+    const paymentStatus = data?.data?.payment?.payment_status;
+    console.log(`[CASHFREE WEBHOOK] Order: ${orderId}, Status: ${paymentStatus}`);
+    // Payment confirmed — you can save order to DB here
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[CASHFREE WEBHOOK] error:', err);
+    res.status(500).json({ success: false });
+  }
+});
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── CASHFREE PAYMENT RETURN HANDLER ─────────────────────────────────────────

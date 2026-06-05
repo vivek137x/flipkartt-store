@@ -1,5 +1,5 @@
 {
-  "merchantUpi": "thakurshivrajsingh170@oksbi",
+  "merchantUpi": "bharatpe2k0b0c2m0k93698@unitype",
   "merchantName": "ShivrajStore",
   "logoUrl": "",
   "qrCode": "",
@@ -7,33 +7,5 @@
   "cashfreeSecretKey": "cfsk_ma_prod_c6567ced394e015447165a80863a70dd_3ac6ec21",
   "cashfreeEnvironment": "PRODUCTION",
   "razorpayKeyId": "",
-  "razorpayKeySecret": "",
-  "promoHeadline": "LATEST FASHION MEGAPORT - FLAT ₹99!",
-  "promoSubheadline": "Trendy Roadster shirts, luxury ZARA dresses, US Polo tees, Levi's jeans, and BIBA sets at flat ₹99!",
-  "homepageBanners": [
-    {
-      "title": "LATEST FASHION MEGAPORT - FLAT ₹99!",
-      "tagline": "Trendy Roadster shirts, luxury ZARA dresses, US Polo tees, Levi's jeans, and BIBA sets at flat ₹99!",
-      "bg": "from-[#ec4899] via-[#d946ef] to-[#8b5cf6]",
-      "badge": "90%+ OFF LATEST TRENDS",
-      "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=300&q=80",
-      "cta": "Shop Fashion Parade"
-    },
-    {
-      "title": "BIG BILLION SAVINGS: FLAT ₹99 EXTREME STORE!",
-      "tagline": "Samsung S24 Ultra, Apple M3 MacBooks, boAt Rockerz - All Flat ₹99!",
-      "bg": "from-[#0f172a] via-[#1e3a8a] to-[#2874f0]",
-      "badge": "FLIPCART PLUS EXCLUSIVE",
-      "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=300&q=80",
-      "cta": "Flat 90%+ Off"
-    },
-    {
-      "title": "BOAT BASSHEADS AUDIO ZONE - FLAT ₹99",
-      "tagline": "Bass-boosted Earbuds, Bluetooth Neckbands, and portable speakers at unbelievable prices!",
-      "bg": "from-[#881337] via-[#dc2626] to-[#fb7185]",
-      "badge": "OFFICIAL BRAND DEALS",
-      "image": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=300&q=80",
-      "cta": "Shop boAt Specials"
-    }
-  ]
+  "razorpayKeySecret": ""
 }
