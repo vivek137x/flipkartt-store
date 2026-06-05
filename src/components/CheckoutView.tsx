@@ -341,103 +341,50 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
     }, 1500);
   };
 
-  // Cashfree + Razorpay Real Payment Integration
+ // REAL Cashfree Payment Gateway Integration
   const handleProceedToCashfree = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!validateAddressForm()) return;
-
     setInitiationLoading(true);
     setPaymentError('');
-
     try {
-      // Try Cashfree first (keys are configured), fallback to Razorpay
-      const cashfreeRes = await fetch('/api/cashfree/create-order', {
+      const res = await fetch('/api/cashfree/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: grandTotal,
-          customerName: fullName,
-          customerPhone: phone,
+          customerName: fullName || 'Customer',
+          customerPhone: phone || '9999999999',
           customerEmail: 'customer@example.com',
         }),
       });
-      const cashfreeData = await cashfreeRes.json();
-
-      if (cashfreeData.success && cashfreeData.paymentSessionId) {
-        // Load Cashfree JS SDK v3
-        if (!(window as any).load) {
-          await new Promise<void>((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Cashfree SDK'));
-            document.body.appendChild(script);
-          });
-        }
-
+      const data = await res.json();
+      if (!data.success || !data.paymentSessionId) {
+        setPaymentError(data.error || 'Payment could not be initiated. Please try again.');
         setInitiationLoading(false);
-
-        const cashfree = (window as any).Cashfree({
-          mode: cashfreeData.env === 'PRODUCTION' ? 'production' : 'sandbox',
-        });
-
-        // Use redirect mode — Cashfree will open their hosted payment page
-        // After payment, user is redirected back to /payment-return
-        cashfree.checkout({
-          paymentSessionId: cashfreeData.paymentSessionId,
-          redirectTarget: '_self',
-        });
         return;
       }
-
-      // Fallback: Try Razorpay if configured
-      const rzpRes = await fetch('/api/razorpay/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: grandTotal, currency: 'INR' }),
+      if (!(window as any).Cashfree) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Failed to load payment SDK'));
+          document.body.appendChild(script);
+        });
+      }
+      setInitiationLoading(false);
+      const cashfree = (window as any).Cashfree({ mode: 'production' });
+      cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: '_self',
       });
-      const rzpData = await rzpRes.json();
-
-      if (rzpData.success) {
-        if (!(window as any).Razorpay) {
-          await new Promise<void>((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
-            document.body.appendChild(script);
-          });
-        }
-        setInitiationLoading(false);
-        const rzp = new (window as any).Razorpay({
-          key: rzpData.keyId,
-          amount: rzpData.order.amount,
-          currency: rzpData.order.currency,
-          name: storeName || 'Flipkart Plus',
-          order_id: rzpData.order.id,
-          prefill: { name: fullName, contact: phone },
-          theme: { color: '#2874f0' },
-          handler: async (response: any) => {
-            const verifyRes = await fetch('/api/razorpay/verify-payment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(response),
-            });
-            const verifyData = await verifyRes.json();
-            if (verifyData.success) {
-              setSuccessOrderId(response.razorpay_payment_id);
-              setConfirmedUtr(response.razorpay_payment_id);
-              setPaymentStatus('success');
-              if (onClearCart) onClearCart();
-            } else {
-              setPaymentError('Payment verification failed. Payment ID: ' + response.razorpay_payment_id);
-            }
-          },
-          modal: { ondismiss: () => { setPaymentError('Payment cancelled.'); setInitiationLoading(false); } },
-        });
-        rzp.open();
-        return;
-      }
+    } catch (err: any) {
+      setPaymentError(err.message || 'Payment failed. Please try again.');
+      setInitiationLoading(false);
+    }
+  };
+ 
 
       // No gateway configured
       setPaymentError(cashfreeData.error || 'Payment gateway not configured. Please contact admin.');
